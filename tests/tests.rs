@@ -2,6 +2,8 @@
 #[phase(plugin)] extern crate json_macros;
 extern crate serialize;
 
+use serialize::json::{mod, ToJson};
+
 #[test]
 fn test_string_lit() {
     assert_eq!(json!("foo").as_string(), Some("foo"));
@@ -22,4 +24,17 @@ fn test_null_lit() {
 fn test_bool_lit() {
     assert_eq!(json!(true).as_boolean(), Some(true));
     assert_eq!(json!(false).as_boolean(), Some(false));
+}
+
+#[test]
+fn test_array_lit() {
+    assert_eq!(json!([]), json::List(vec![]));
+
+    let foobar = json::List(vec!["foo".to_string().to_json(),
+                                 "bar".to_string().to_json()]);
+    assert_eq!(json!(["foo", "bar"]), foobar);
+
+    let foobar = json::List(vec!["foo".to_string().to_json(),
+                                 vec!["bar".to_string().to_json()].to_json()]);
+    assert_eq!(json!(["foo", ["bar"]]), foobar);
 }
