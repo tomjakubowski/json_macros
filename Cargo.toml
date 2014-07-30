@@ -1,0 +1,14 @@
+[package]
+
+name = "json_macros"
+version = "0.0.1"
+authors = ["Tom Jakubowski <tom@crystae.net>"]
+
+[[lib]]
+
+name = "json_macros"
+path = "src/macro.rs"
+plugin = true
+
+[[test]]
+name = "tests"
