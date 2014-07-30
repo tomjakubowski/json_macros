@@ -10,7 +10,7 @@ fn test_string_lit() {
 #[test]
 fn test_num_lit() {
     assert_eq!(json!(1234).as_number(), Some(1234f64));
-    // FIXME: assert_eq!(json!(12345.6789).as_number(), Some(12345.6789f64));
+    // assert_eq!(json!(12345.).as_number(), Some(12345.6789f64));
 }
 
 #[test]

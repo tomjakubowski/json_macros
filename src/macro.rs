@@ -22,6 +22,7 @@ pub fn plugin_registrar(reg: &mut Registry) {
 
 fn expand(cx: &mut ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<MacResult> {
     debug!("JSON token tree {}", tts);
+
     let tt = tts.get(0).expect("FIXME"); // FIXME
     let expr = match tt_to_expr(cx, sp, tt) {
         Some(e) => e,
@@ -34,6 +35,23 @@ fn tt_to_expr(cx: &mut ExtCtxt, sp: codemap::Span,
               tt: &ast::TokenTree) -> Option<Gc<ast::Expr>> {
     match *tt {
         ast::TTTok(sp, ref tok) => token_to_expr(cx, sp, tok),
+        ast::TTDelim(ref toks) => {
+            match (**toks)[0] {
+                // array
+                ast::TTTok(_, token::LBRACKET) => {
+                    cx.span_err(sp, "arrays not implemented");
+                    None
+                }
+                ast::TTTok(_, token::LBRACE) => {
+                    cx.span_err(sp, "objects not implemented");
+                    None
+                }
+                _ => {
+                    cx.span_err(sp, "something something FIXME");
+                    None
+                }
+            }
+        }
         _ => {
             cx.span_err(sp, "something something FIXME");
             None
@@ -44,6 +62,8 @@ fn tt_to_expr(cx: &mut ExtCtxt, sp: codemap::Span,
 fn token_to_expr(cx: &mut ExtCtxt, sp: codemap::Span,
                  tok: &token::Token) -> Option<Gc<ast::Expr>> {
     use std::from_str::FromStr;
+    use syntax::print::pprust;
+
     match *tok {
         token::LIT_STR(ref n) => {
             let s = n.as_str();
@@ -53,7 +73,7 @@ fn token_to_expr(cx: &mut ExtCtxt, sp: codemap::Span,
         }
         token::LIT_INTEGER(ref n) => {
             let s = n.as_str();
-            let n: i64 = FromStr::from_str(s).unwrap();
+            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: is i64 right?
             Some(quote_expr!(cx, {
                 ::serialize::json::Number($n as f64)
             }))
@@ -70,7 +90,9 @@ fn token_to_expr(cx: &mut ExtCtxt, sp: codemap::Span,
             Some(quote_expr!(cx, { ::serialize::json::Boolean(false) }))
         }
         _ => {
-            cx.span_err(sp, "couldn't interpret token as JSON");
+            let tt = ast::TTTok(sp, tok.clone());
+            let s = pprust::tt_to_string(&tt);
+            cx.span_err(sp, format!("couldn't interpret `{}` as JSON", s).as_slice());
             None
         }
     }
