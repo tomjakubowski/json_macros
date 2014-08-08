@@ -8,20 +8,23 @@ extern crate syntax;
 extern crate serialize;
 
 use std::gc::Gc;
+use syntax::ast::TokenTree;
+use syntax::codemap::Span;
 use rustc::plugin::Registry;
 
 use syntax::ast;
-use syntax::codemap;
 use syntax::ext::base::{ExtCtxt, MacResult, MacExpr, DummyResult};
 use syntax::parse::token;
 use syntax::print::pprust;
+
+type GcExpr = Gc<ast::Expr>;
 
 #[plugin_registrar]
 pub fn plugin_registrar(reg: &mut Registry) {
     reg.register_macro("json", expand);
 }
 
-fn expand(cx: &mut ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<MacResult> {
+fn expand(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
     debug!("JSON token tree {}", tts);
 
     let tt = tts.get(0).expect("FIXME"); // FIXME
@@ -32,8 +35,7 @@ fn expand(cx: &mut ExtCtxt, sp: codemap::Span, tts: &[ast::TokenTree]) -> Box<Ma
     MacExpr::new(expr)
 }
 
-fn tt_to_expr(cx: &ExtCtxt, sp: codemap::Span,
-              tt: &ast::TokenTree) -> Option<Gc<ast::Expr>> {
+fn tt_to_expr(cx: &ExtCtxt, sp: Span, tt: &TokenTree) -> Option<GcExpr> {
     use syntax::ext::build::AstBuilder;
 
     match *tt {
@@ -54,9 +56,26 @@ fn tt_to_expr(cx: &ExtCtxt, sp: codemap::Span,
                         }
                     }))
                 }
+                // object
                 ast::TTTok(sp, token::LBRACE) => {
-                    cx.span_err(sp, "JSON objects not implemented");
-                    None
+                    let items = match parse_object(cx, sp, toks.as_slice()) {
+                        Some(i) => i,
+                        None => return None
+                    };
+                    let ob = quote_expr!(cx, _ob);
+                    let mut stmts = vec![];
+                    for &(key, value) in items.iter() {
+                        stmts.push(quote_stmt!(cx, $ob.insert($key, $value)));
+                    }
+
+                    let res = quote_expr!(cx, {
+                        {
+                            let mut $ob = ::std::collections::TreeMap::new();
+                            $stmts;
+                            ::serialize::json::Object($ob)
+                        }
+                    });
+                    Some(res)
                 }
                 ref tt => {
                     let pp = pprust::tt_to_string(tt);
@@ -66,16 +85,21 @@ fn tt_to_expr(cx: &ExtCtxt, sp: codemap::Span,
                 }
             }
         }
-        _ => {
-            cx.span_err(sp, "something something FIXME");
+        // vvv are these code paths even reachable? copied this from
+        // brainfuck_macros
+        ast::TTSeq(sp, _, _, _) => {
+            cx.span_err(sp, "`json!` doesn't support sequences");
+            None
+        }
+        ast::TTNonterminal(sp, _) => {
+            cx.span_err(sp, "`json!` doesn't support non-terminals");
             None
         }
     }
 }
 
-fn parse_array(cx: &ExtCtxt, sp: codemap::Span,
-               toks: &[ast::TokenTree]) -> Option<Vec<Gc<ast::Expr>>> {
-    let mids = toks.slice(1, toks.len() - 1); // all but the []
+fn parse_array(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<GcExpr>> {
+    let mids = tts.slice(1, tts.len() - 1); // all but the []
     let mut exprs = Vec::with_capacity(mids.len() / 2);
     for (i, tt) in mids.iter().enumerate() {
         if i % 2 == 1 {
@@ -84,9 +108,7 @@ fn parse_array(cx: &ExtCtxt, sp: codemap::Span,
                     continue;
                 }
                 _ => {
-                    let pp = pprust::tt_to_string(tt);
-                    let err = format!("expected `,` but found: `{}`", pp);
-                    cx.span_err(best_span(sp, tt), err.as_slice());
+                    expected_but_found(cx, sp, "`,`", tt);
                     return None;
                 }
             }
@@ -101,8 +123,78 @@ fn parse_array(cx: &ExtCtxt, sp: codemap::Span,
     Some(exprs)
 }
 
-fn token_to_expr(cx: &ExtCtxt, sp: codemap::Span,
-                 tok: &token::Token) -> Option<Gc<ast::Expr>> {
+#[allow(dead_code)]
+fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(GcExpr, GcExpr)>> {
+    use syntax::ast::TTTok;
+    use tok = syntax::parse::token;
+
+    macro_rules! comma {
+        () => {
+            ::syntax::ast::TTTok(_, ::syntax::parse::token::COMMA)
+        }
+    }
+
+    macro_rules! colon {
+        () => {
+            ::syntax::ast::TTTok(_, ::syntax::parse::token::COLON)
+        };
+        ($sp:ident) => {
+            ::syntax::ast::TTTok($sp, ::syntax::parse::token::COLON)
+        }
+    }
+
+    let mids = tts.slice(1, tts.len() - 1); // all but the {}
+    let mut items = Vec::with_capacity(mids.len() / 4);
+    if tts.len() == 0 {
+        return Some(items);
+    }
+
+    // horrible
+    for entry in mids.chunks(4) {
+        let item = match entry {
+            // "foo": VALUE | "foo": VALUE,
+            [TTTok(_, tok::LIT_STR(ref n)), colon!(), ref v] |
+            [TTTok(_, tok::LIT_STR(ref n)), colon!(), ref v, comma!()] => {
+                let k = n.as_str();
+                let v = tt_to_expr(cx, sp, v);
+                if v.is_none() {
+                    return None;
+                }
+                let k = quote_expr!(cx, $k.to_string());
+                let v = quote_expr!(cx, $v);
+                (k, v)
+            }
+            // "foo": VALUE X
+            [TTTok(_, tok::LIT_STR(_)), colon!(), _, ref tt] => {
+                expected_but_found(cx, sp, "`,`", tt);
+                return None;
+            }
+            [TTTok(_, tok::LIT_STR(_)), colon!(sp)] => {
+                cx.span_err(sp, "found `:` but no value afterwards");
+                return None;
+            }
+            [TTTok(_, tok::LIT_STR(_)), ref tt, ..] => {
+                expected_but_found(cx, sp, "`:`", tt);
+                return None;
+            }
+            [TTTok(sp, tok::LIT_STR(_))] => {
+                cx.span_err(sp, "found name but no colon-value afterwards");
+                return None;
+            }
+            [ref tt, ..] => {
+                expected_but_found(cx, sp, "string literal", tt);
+                return None;
+            }
+            [] => unreachable!(), // chunks() never returns an empty slice
+            // _ => unimplemented!()
+        };
+        items.push(item);
+    }
+
+    Some(items)
+}
+
+fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<GcExpr> {
     use std::from_str::FromStr;
     use syntax::print::pprust;
 
@@ -140,7 +232,7 @@ fn token_to_expr(cx: &ExtCtxt, sp: codemap::Span,
     }
 }
 
-fn best_span(sp: codemap::Span, tt: &ast::TokenTree) -> codemap::Span {
+fn best_span(sp: Span, tt: &TokenTree) -> Span {
     let sp = match *tt {
         ast::TTTok(tok_sp, _) => tok_sp,
         ast::TTDelim(ref tts) => {
@@ -152,4 +244,10 @@ fn best_span(sp: codemap::Span, tt: &ast::TokenTree) -> codemap::Span {
         _ => sp // the span passed into the function!
     };
     sp
+}
+
+fn expected_but_found(cx: &ExtCtxt, sp: Span, expected: &str, found: &TokenTree) {
+    let pp = pprust::tt_to_string(found);
+    let err = format!("expected {} but found: `{}`", expected, pp);
+    cx.span_err(best_span(sp, found), err.as_slice());
 }
