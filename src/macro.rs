@@ -27,7 +27,14 @@ pub fn plugin_registrar(reg: &mut Registry) {
 fn expand(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
     debug!("JSON token tree {}", tts);
 
-    let tt = tts.get(0).expect("FIXME"); // FIXME
+    let tt = match tts.get(0) {
+        Some(tt) => tt,
+        None => {
+            cx.span_err(sp, "expected JSON literal");
+            return DummyResult::expr(sp);
+        }
+    };
+
     let expr = match tt_to_expr(cx, sp, tt) {
         Some(e) => e,
         None => return DummyResult::expr(sp)
@@ -77,9 +84,10 @@ fn tt_to_expr(cx: &ExtCtxt, sp: Span, tt: &TokenTree) -> Option<GcExpr> {
                     });
                     Some(res)
                 }
+                // FIXME: could we allow arbitrary expressions inside `()`?
                 ref tt => {
                     let pp = pprust::tt_to_string(tt);
-                    let err = format!("unexpected `{}` in JSON", pp);
+                    let err = format!("unexpected `{}` in `json!`", pp);
                     cx.span_err(best_span(sp, tt), err.as_slice());
                     None
                 }
@@ -186,7 +194,6 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(GcExpr
                 return None;
             }
             [] => unreachable!(), // chunks() never returns an empty slice
-            // _ => unimplemented!()
         };
         items.push(item);
     }
@@ -212,11 +219,11 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<GcExpr> {
                 ::serialize::json::Number($n as f64)
             }))
         }
-        token::LIT_FLOAT(ref _n) => {
-            cx.span_err(sp, format!("json! does not yet support float literals").as_slice());
+        token::LIT_FLOAT(..) => {
+            cx.span_err(sp, format!("`json!` does not yet support float literals").as_slice());
             None
         }
-        token::IDENT(ref n, false) if n.as_str() == "null" => {
+        token::IDENT(ref id, false) if id.as_str() == "null" => {
             Some(quote_expr!(cx, {
                 ::serialize::json::Null
             }))
