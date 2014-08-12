@@ -12,3 +12,7 @@ plugin = true
 
 [[test]]
 name = "tests"
+
+[[example]]
+name = "foo"
+path = "examples/foo.rs"
