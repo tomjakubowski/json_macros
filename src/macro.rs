@@ -212,6 +212,10 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<GcExpr> {
                 ::serialize::json::Number($n as f64)
             }))
         }
+        token::LIT_FLOAT(ref _n) => {
+            cx.span_err(sp, format!("json! does not yet support float literals").as_slice());
+            None
+        }
         token::IDENT(ref n, false) if n.as_str() == "null" => {
             Some(quote_expr!(cx, {
                 ::serialize::json::Null
