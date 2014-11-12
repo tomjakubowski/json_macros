@@ -27,5 +27,5 @@ pub fn main() {
 
 ## Caveats
 
-* Suffixed numeric literals and negative numbers are currently broken, but can
+* Suffixed and negative numeric literals are currently broken, but can
   be worked around by wrapping them in `()`, as in `json!({ "a": (-1234i32) })`.
