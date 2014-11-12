@@ -60,8 +60,9 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                     let exprs = cx.expr_vec(sp, exprs);
                     Some(quote_expr!(cx, {
                         {
-                            let mut _vec = Vec::from_slice($exprs.as_slice());
-                            ::serialize::json::List(_vec)
+                            use std::slice::BoxedSlicePrelude;
+                            let xs: ::std::boxed::Box<[_]> = box $exprs;
+                            ::serialize::json::List(xs.into_vec())
                         }
                     }))
                 }
@@ -209,9 +210,9 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         }
         token::LitInteger(ref n) => {
             let s = n.as_str();
-            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: is i64 right?
+            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: i64 for everything is wrong
             Some(quote_expr!(cx, {
-                ::serialize::json::Number($n as f64)
+                ::serialize::json::I64($n)
             }))
         }
         token::LitFloat(..) => {

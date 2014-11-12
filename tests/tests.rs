@@ -12,7 +12,7 @@ fn test_string_lit() {
 
 #[test]
 fn test_num_lit() {
-    assert_eq!(json!(1234).as_number(), Some(1234f64));
+    assert_eq!(json!(1234).as_i64(), Some(1234));
     // :(
     // assert_eq!(json!(12345.).as_number(), Some(12345.f64));
 }
@@ -67,4 +67,12 @@ fn test_object_lit() {
         "foo": { "bar": "baz" },
         "quux": null,
     }), json::Object(nested));
+}
+
+#[test]
+fn test_expr_insertion() {
+    // let hello = "hello world!";
+    // json!({
+    //     "message": hello
+    // });
 }
