@@ -2,6 +2,15 @@
 
 Construct JSON objects in Rust from JSON-like literals.
 
+## Dependency
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies.json_macros]
+git = "https://github.com/tomjakubowski/json_macros"
+```
+
 ## Example
 
 ```rust
