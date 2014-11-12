@@ -11,6 +11,9 @@ Add to your `Cargo.toml`:
 git = "https://github.com/tomjakubowski/json_macros"
 ```
 
+You'll also need to link to the `serialize` crate, where the Rust standard
+library JSON types live.
+
 ## Example
 
 ```rust
