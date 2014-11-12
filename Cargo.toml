@@ -14,5 +14,5 @@ plugin = true
 name = "tests"
 
 [[example]]
-name = "foo"
-path = "examples/foo.rs"
+name = "kitchen-sink"
+path = "examples/kitchen_sink.rs"

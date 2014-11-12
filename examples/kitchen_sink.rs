@@ -13,6 +13,6 @@ pub fn main() {
             "b": { "a": null },
             "c": false
         },
-        "waldo": (foo - 123) // wrap in parentheses to splice ToJson expressions directly
+        "waldo": (192 - foo) // wrap in parentheses to splice ToJson expressions directly
     }).to_pretty_str());
 }
