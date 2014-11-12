@@ -13,8 +13,7 @@ fn test_string_lit() {
 #[test]
 fn test_num_lit() {
     assert_eq!(json!(1234).as_i64(), Some(1234));
-    // :(
-    // assert_eq!(json!(12345.).as_number(), Some(12345.f64));
+    assert_eq!(json!(12345.).as_f64(), Some(12345.));
 }
 
 #[test]
@@ -71,8 +70,10 @@ fn test_object_lit() {
 
 #[test]
 fn test_expr_insertion() {
-    // let hello = "hello world!";
-    // json!({
-    //     "message": hello
-    // });
+    let hello = "hello world!";
+    let json = json!({
+        "message": (hello.into_string())
+    });
+    assert_eq!(json.find("message").and_then(|j| j.as_string()),
+               Some(hello));
 }

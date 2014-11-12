@@ -86,7 +86,6 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                         }
                     }))
                 }
-                // FIXME: could we allow arbitrary expressions inside `()`?
                 token::Paren => {
                     let mut parser = cx.new_parser_from_tts(toks.as_slice());
                     let expr = parser.parse_expr();
@@ -210,14 +209,16 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         }
         token::LitInteger(ref n) => {
             let s = n.as_str();
-            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: i64 for everything is wrong
+            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: is i64 wrong?
             Some(quote_expr!(cx, {
                 ::serialize::json::I64($n)
             }))
         }
-        token::LitFloat(..) => {
-            cx.span_err(sp, format!("`json!` does not yet support float literals").as_slice());
-            None
+        token::LitFloat(_) => {
+            let tt = ast::TtToken(sp, tok.clone());
+            Some(quote_expr!(cx, {
+                ::serialize::json::F64($tt)
+            }))
         }
         token::Ident(ref id, token::Plain) if id.as_str() == "null" => {
             Some(quote_expr!(cx, {
