@@ -243,13 +243,6 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
 fn best_span(sp: Span, tt: &TokenTree) -> Span {
     let sp = match *tt {
         ast::TtToken(tok_sp, _) => tok_sp,
-        ast::TtDelimited(_, ref delim) => {
-            let ref tts = delim.tts;
-            match tts[0] {
-                ast::TtToken(bra_sp, _) => bra_sp,
-                _ => sp
-            }
-        }
         _ => sp // the span passed into the function!
     };
     sp
