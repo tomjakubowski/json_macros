@@ -197,21 +197,21 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
 }
 
 fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
-    use std::from_str::FromStr;
     use syntax::print::pprust;
 
     match *tok {
         token::LitStr(ref n) => {
             let s = n.as_str();
             Some(quote_expr!(cx, {
-                ::serialize::json::String($s.to_string())
+                ::serialize::json::String($s.into_string())
             }))
         }
-        token::LitInteger(ref n) => {
-            let s = n.as_str();
-            let n: i64 = FromStr::from_str(s).unwrap(); // FIXME: is i64 wrong?
+        // FIXME: handle suffixed literals (i.e. u64) correctly
+        // FIXME: handle negative numbers
+        token::LitInteger(_) => {
+            let tt = ast::TtToken(sp, tok.clone());
             Some(quote_expr!(cx, {
-                ::serialize::json::I64($n)
+                ::serialize::json::I64($tt as i64)
             }))
         }
         token::LitFloat(_) => {
