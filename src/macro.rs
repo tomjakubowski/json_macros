@@ -163,7 +163,7 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
                 if v.is_none() {
                     return None;
                 }
-                let k = quote_expr!(cx, $k.to_string());
+                let k = quote_expr!(cx, $k.into_string());
                 let v = quote_expr!(cx, $v);
                 (k, v)
             }
