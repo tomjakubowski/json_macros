@@ -1,5 +1,8 @@
 # json_macros
 
+[![Build Status](https://travis-ci.org/tomjakubowski/json_macros.svg?branch=master)]
+(https://travis-ci.org/tomjakubowski/json_macros)
+
 Construct JSON objects in Rust from JSON-like literals.
 
 ## Dependency
