@@ -130,7 +130,6 @@ fn parse_array(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<PExpr>> 
 
 fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr, PExpr)>> {
     use syntax::ast::TtToken;
-    use syntax::parse::token as tok;
 
     macro_rules! comma {
         () => {
@@ -154,10 +153,11 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
 
     // horrible
     for entry in tts.chunks(4) {
+        use syntax::parse::token::{Lit, Literal};
         let item = match entry {
             // "foo": VALUE | "foo": VALUE,
-            [TtToken(_, tok::LitStr(ref n)), colon!(), ref v] |
-            [TtToken(_, tok::LitStr(ref n)), colon!(), ref v, comma!()] => {
+            [TtToken(_, Literal(Lit::Str_(ref n), _)), colon!(), ref v] |
+            [TtToken(_, Literal(Lit::Str_(ref n), _)), colon!(), ref v, comma!()] => {
                 let k = n.as_str();
                 let v = tt_to_expr(cx, v);
                 if v.is_none() {
@@ -168,19 +168,19 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
                 (k, v)
             }
             // "foo": VALUE X
-            [TtToken(_, tok::LitStr(_)), colon!(), _, ref tt] => {
+            [TtToken(_, Literal(Lit::Str_(_), _)), colon!(), _, ref tt] => {
                 expected_but_found(cx, sp, "`,`", tt);
                 return None;
             }
-            [TtToken(_, tok::LitStr(_)), colon!(sp)] => {
+            [TtToken(_, Literal(Lit::Str_(_), _)), colon!(sp)] => {
                 cx.span_err(sp, "found `:` but no value afterwards");
                 return None;
             }
-            [TtToken(_, tok::LitStr(_)), ref tt, ..] => {
+            [TtToken(_, Literal(Lit::Str_(_) ,_)), ref tt, ..] => {
                 expected_but_found(cx, sp, "`:`", tt);
                 return None;
             }
-            [TtToken(sp, tok::LitStr(_))] => {
+            [TtToken(sp, Literal(Lit::Str_(_), _))] => {
                 cx.span_err(sp, "found name but no colon-value afterwards");
                 return None;
             }
@@ -198,9 +198,10 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
 
 fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
     use syntax::print::pprust;
+    use syntax::parse::token::{Lit, Literal};
 
     match *tok {
-        token::LitStr(ref n) => {
+        Literal(Lit::Str_(ref n), _) => {
             let s = n.as_str();
             Some(quote_expr!(cx, {
                 ::serialize::json::String($s.into_string())
@@ -208,13 +209,13 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         }
         // FIXME: handle suffixed literals (i.e. u64) correctly
         // FIXME: handle negative numbers
-        token::LitInteger(_) => {
+        Literal(Lit::Integer(_), _)=> {
             let tt = ast::TtToken(sp, tok.clone());
             Some(quote_expr!(cx, {
                 ::serialize::json::I64($tt as i64)
             }))
         }
-        token::LitFloat(_) => {
+        Literal(Lit::Float(_), _) => {
             let tt = ast::TtToken(sp, tok.clone());
             Some(quote_expr!(cx, {
                 ::serialize::json::F64($tt)
