@@ -14,6 +14,13 @@ Add to your `Cargo.toml`:
 git = "https://github.com/tomjakubowski/json_macros"
 ```
 
+Or, from the registry:
+```toml
+[dependencies]
+# ...
+json_macros = "~0.0.2"
+```
+
 You'll also need to link with the `serialize` crate, where the Rust standard
 library JSON types live.
 
