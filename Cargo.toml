@@ -1,8 +1,16 @@
 [package]
 
 name = "json_macros"
-version = "0.0.1"
+version = "0.0.2-pre"
 authors = ["Tom Jakubowski <tom@crystae.net>"]
+
+readme = "README.markdown"
+license = "MIT"
+repository = "https://github.com/tomjakubowski/json_macros"
+description = """
+Convenience macros for constructing JSON objects from literals.
+"""
+keywords = ["json", "macros", "plugins"]
 
 [lib]
 
