@@ -62,7 +62,7 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                         {
                             use std::slice::BoxedSlicePrelude;
                             let xs: ::std::boxed::Box<[_]> = box $exprs;
-                            ::serialize::json::List(xs.into_vec())
+                            ::serialize::json::Array(xs.into_vec())
                         }
                     }))
                 }

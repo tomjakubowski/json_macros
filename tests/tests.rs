@@ -29,14 +29,14 @@ fn test_bool_lit() {
 
 #[test]
 fn test_array_lit() {
-    assert_eq!(json!([]), json::List(vec![]));
+    assert_eq!(json!([]), json::Array(vec![]));
 
-    let foobar = json::List(vec!["foo".to_string().to_json(),
-                                 "bar".to_string().to_json()]);
+    let foobar = json::Array(vec!["foo".to_string().to_json(),
+                                  "bar".to_string().to_json()]);
     assert_eq!(json!(["foo", "bar"]), foobar);
 
-    let foobar = json::List(vec!["foo".to_string().to_json(),
-                                 vec!["bar".to_string().to_json()].to_json()]);
+    let foobar = json::Array(vec!["foo".to_string().to_json(),
+                             vec!["bar".to_string().to_json()].to_json()]);
     assert_eq!(json!(["foo", ["bar"]]), foobar);
 }
 
