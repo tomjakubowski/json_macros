@@ -3,7 +3,7 @@
 extern crate serialize;
 
 use std::collections::TreeMap;
-use serialize::json::{mod, ToJson};
+use serialize::json::{Json, ToJson};
 
 #[test]
 fn test_string_lit() {
@@ -29,13 +29,13 @@ fn test_bool_lit() {
 
 #[test]
 fn test_array_lit() {
-    assert_eq!(json!([]), json::Array(vec![]));
+    assert_eq!(json!([]), Json::Array(vec![]));
 
-    let foobar = json::Array(vec!["foo".to_string().to_json(),
+    let foobar = Json::Array(vec!["foo".to_string().to_json(),
                                   "bar".to_string().to_json()]);
     assert_eq!(json!(["foo", "bar"]), foobar);
 
-    let foobar = json::Array(vec!["foo".to_string().to_json(),
+    let foobar = Json::Array(vec!["foo".to_string().to_json(),
                              vec!["bar".to_string().to_json()].to_json()]);
     assert_eq!(json!(["foo", ["bar"]]), foobar);
 }
@@ -43,11 +43,11 @@ fn test_array_lit() {
 #[test]
 fn test_object_lit() {
     let empty = TreeMap::new();
-    assert_eq!(json!({}), json::Object(empty));
+    assert_eq!(json!({}), Json::Object(empty));
 
     let mut foo_bar = TreeMap::new();
     foo_bar.insert("foo".to_string(), json!("bar"));
-    assert_eq!(json!({"foo": "bar"}), json::Object(foo_bar));
+    assert_eq!(json!({"foo": "bar"}), Json::Object(foo_bar));
 
     let mut foo_bar_baz_123 = TreeMap::new();
     foo_bar_baz_123.insert("foo".to_string(), json!("bar"));
@@ -55,17 +55,17 @@ fn test_object_lit() {
     assert_eq!(json!({
         "foo": "bar",
         "baz": 123
-    }), json::Object(foo_bar_baz_123));
+    }), Json::Object(foo_bar_baz_123));
 
     let mut nested = TreeMap::new();
     let mut bar_baz = TreeMap::new();
     bar_baz.insert("bar".to_string(), json!("baz"));
-    nested.insert("foo".to_string(), json::Object(bar_baz));
-    nested.insert("quux".to_string(), json::Null);
+    nested.insert("foo".to_string(), Json::Object(bar_baz));
+    nested.insert("quux".to_string(), Json::Null);
     assert_eq!(json!({
         "foo": { "bar": "baz" },
         "quux": null,
-    }), json::Object(nested));
+    }), Json::Object(nested));
 }
 
 #[test]
