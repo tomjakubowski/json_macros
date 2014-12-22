@@ -80,7 +80,7 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
 
                     Some(quote_expr!(cx, {
                         {
-                            let mut $ob = ::std::collections::TreeMap::new();
+                            let mut $ob = ::std::collections::BTreeMap::new();
                             $stmts;
                             ::serialize::json::Json::Object($ob)
                         }
