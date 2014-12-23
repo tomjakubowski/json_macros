@@ -18,6 +18,12 @@ name = "json_macros"
 path = "src/macro.rs"
 plugin = true
 
+[profile.dev]
+debug = false
+
+[profile.test]
+debug = false
+
 [[test]]
 name = "tests"
 
