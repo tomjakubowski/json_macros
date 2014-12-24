@@ -1,9 +1,9 @@
 #![feature(phase)]
 #[phase(plugin)] extern crate json_macros;
-extern crate serialize;
+extern crate "rustc-serialize" as rustc_serialize;
 
 use std::collections::BTreeMap;
-use serialize::json::{Json, ToJson};
+use rustc_serialize::json::{Json, ToJson};
 
 #[test]
 fn test_string_lit() {

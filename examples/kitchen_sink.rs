@@ -1,7 +1,7 @@
 #![feature(phase)]
 #[phase(plugin)] extern crate json_macros;
 
-extern crate serialize;
+extern crate "rustc-serialize" as rustc_serialize;
 
 pub fn main() {
     let x = 123i32;

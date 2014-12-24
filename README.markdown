@@ -21,8 +21,8 @@ Or, from the registry:
 json_macros = "~0.0.2"
 ```
 
-You'll also need to link with the `serialize` crate, where the Rust standard
-library JSON types live.
+You'll also need to link with the `rustc-serialize` crate, where the Rust
+JSON types live.
 
 ## Example
 
@@ -30,7 +30,7 @@ library JSON types live.
 #![feature(phase)]
 #[phase(plugin)] extern crate json_macros;
 
-extern crate serialize;
+extern crate "rustc-serialize" as rustc_serialize;
 
 pub fn main() {
     let x = 123i32;

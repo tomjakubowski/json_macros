@@ -5,7 +5,7 @@
 #[phase(plugin, link)] extern crate log;
 extern crate rustc;
 extern crate syntax;
-extern crate serialize;
+extern crate "rustc-serialize" as rustc_serialize;
 
 use syntax::ast::TokenTree;
 use syntax::codemap::Span;
@@ -62,7 +62,7 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                         {
                             use std::slice::BoxedSliceExt;
                             let xs: ::std::boxed::Box<[_]> = box $exprs;
-                            ::serialize::json::Json::Array(xs.into_vec())
+                            ::rustc_serialize::json::Json::Array(xs.into_vec())
                         }
                     }))
                 }
@@ -82,7 +82,7 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                         {
                             let mut $ob = ::std::collections::BTreeMap::new();
                             $stmts;
-                            ::serialize::json::Json::Object($ob)
+                            ::rustc_serialize::json::Json::Object($ob)
                         }
                     }))
                 }
@@ -91,7 +91,7 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                     let expr = parser.parse_expr();
 
                     Some(quote_expr!(cx, {
-                        use serialize::json::ToJson;
+                        use rustc_serialize::json::ToJson;
                         ($expr).to_json()
                     }))
                 }
@@ -204,7 +204,7 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         Literal(Lit::Str_(ref n), _) => {
             let s = n.as_str();
             Some(quote_expr!(cx, {
-                ::serialize::json::Json::String($s.into_string())
+                ::rustc_serialize::json::Json::String($s.into_string())
             }))
         }
         // FIXME: handle suffixed literals (i.e. u64) correctly
@@ -212,25 +212,25 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         Literal(Lit::Integer(_), _)=> {
             let tt = ast::TtToken(sp, tok.clone());
             Some(quote_expr!(cx, {
-                ::serialize::json::Json::I64($tt as i64)
+                ::rustc_serialize::json::Json::I64($tt as i64)
             }))
         }
         Literal(Lit::Float(_), _) => {
             let tt = ast::TtToken(sp, tok.clone());
             Some(quote_expr!(cx, {
-                ::serialize::json::Json::F64($tt)
+                ::rustc_serialize::json::Json::F64($tt)
             }))
         }
         token::Ident(ref id, token::Plain) if id.as_str() == "null" => {
             Some(quote_expr!(cx, {
-                ::serialize::json::Json::Null
+                ::rustc_serialize::json::Json::Null
             }))
         }
         ref t @ token::Ident(..) if t.is_keyword(token::keywords::True) => {
-            Some(quote_expr!(cx, { ::serialize::json::Json::Boolean(true) }))
+            Some(quote_expr!(cx, { ::rustc_serialize::json::Json::Boolean(true) }))
         }
         ref t @ token::Ident(..) if t.is_keyword(token::keywords::False) => {
-            Some(quote_expr!(cx, { ::serialize::json::Json::Boolean(false) }))
+            Some(quote_expr!(cx, { ::rustc_serialize::json::Json::Boolean(false) }))
         }
         _ => {
             let tt = ast::TtToken(sp, tok.clone());

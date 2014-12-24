@@ -21,6 +21,9 @@ plugin = true
 [[test]]
 name = "tests"
 
+[dependencies]
+rustc-serialize = "*"
+
 [[example]]
 name = "kitchen-sink"
 path = "examples/kitchen_sink.rs"
