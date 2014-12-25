@@ -160,7 +160,10 @@ fn parse_object(cx: &ExtCtxt, sp: Span, tts: &[TokenTree]) -> Option<Vec<(PExpr,
                 if v.is_none() {
                     return None;
                 }
-                let k = quote_expr!(cx, $k.into_string());
+                let k = quote_expr!(cx, {
+                    use std::borrow::ToOwned;
+                    $k.to_owned()
+                });
                 let v = quote_expr!(cx, $v);
                 (k, v)
             }
@@ -201,7 +204,8 @@ fn token_to_expr(cx: &ExtCtxt, sp: Span, tok: &token::Token) -> Option<PExpr> {
         Literal(Lit::Str_(ref n), _) => {
             let s = n.as_str();
             Some(quote_expr!(cx, {
-                ::rustc_serialize::json::Json::String($s.into_string())
+                use std::borrow::ToOwned;
+                ::rustc_serialize::json::Json::String($s.to_owned())
             }))
         }
         // FIXME: handle suffixed literals (i.e. u64) correctly
