@@ -23,7 +23,6 @@ name = "tests"
 
 [dependencies]
 rustc-serialize = "*"
-log = "*"
 
 [[example]]
 name = "kitchen-sink"

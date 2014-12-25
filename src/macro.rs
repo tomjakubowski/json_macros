@@ -2,7 +2,6 @@
 #![crate_type="dylib"]
 #![feature(phase, plugin_registrar, macro_rules, quote)]
 
-#[cfg(not(ndebug))] #[phase(plugin, link)] extern crate log;
 extern crate rustc;
 extern crate syntax;
 extern crate "rustc-serialize" as rustc_serialize;
@@ -24,18 +23,8 @@ pub fn plugin_registrar(reg: &mut Registry) {
     reg.register_macro("json", expand);
 }
 
-#[cfg(not(ndebug))]
-fn log_tree(tts: &[TokenTree]) {
-    debug!("JSON token tree {}", tts);
-}
-
-#[cfg(ndebug)]
-fn log_tree(_: &[TokenTree]) { }
-
 fn expand<'cx>(cx: &'cx mut ExtCtxt, sp: Span,
                tts: &[TokenTree]) -> Box<MacResult + 'cx> {
-    log_tree(tts);
-
     let tt = match tts.get(0) {
         Some(tt) => tt,
         None => {
