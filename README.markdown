@@ -18,7 +18,7 @@ Or, from the registry:
 ```toml
 [dependencies]
 # ...
-json_macros = "~0.0.2"
+json_macros = "*"
 ```
 
 You'll also need to link with the `rustc-serialize` crate, where the Rust
