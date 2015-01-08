@@ -27,8 +27,8 @@ JSON types live.
 ## Example
 
 ```rust
-#![feature(phase)]
-#[phase(plugin)] extern crate json_macros;
+#![feature(plugin)]
+#[plugin] extern crate json_macros;
 
 extern crate "rustc-serialize" as rustc_serialize;
 
@@ -43,7 +43,7 @@ pub fn main() {
             "c": false
         },
         "waldo": (192 - x) // wrap in parens to splice ToJson expressions directly
-    }).to_pretty_str());
+    }).pretty().to_string());
 }
 ```
 

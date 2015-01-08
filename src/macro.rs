@@ -1,6 +1,6 @@
 #![crate_name="json_macros"]
 #![crate_type="dylib"]
-#![feature(phase, plugin_registrar, macro_rules, quote)]
+#![feature(phase, plugin_registrar, quote)]
 
 extern crate rustc;
 extern crate syntax;
@@ -57,7 +57,6 @@ fn tt_to_expr(cx: &ExtCtxt, tt: &TokenTree) -> Option<PExpr> {
                     let exprs = cx.expr_vec(sp, exprs);
                     Some(quote_expr!(cx, {
                         {
-                            use std::slice::BoxedSliceExt;
                             let xs: ::std::boxed::Box<[_]> = box $exprs;
                             ::rustc_serialize::json::Json::Array(xs.into_vec())
                         }

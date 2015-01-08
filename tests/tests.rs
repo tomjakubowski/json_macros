@@ -1,5 +1,5 @@
-#![feature(phase)]
-#[phase(plugin)] extern crate json_macros;
+#![feature(plugin)]
+#[plugin] extern crate json_macros;
 extern crate "rustc-serialize" as rustc_serialize;
 
 use std::collections::BTreeMap;
@@ -72,7 +72,7 @@ fn test_object_lit() {
 fn test_expr_insertion() {
     let hello = "hello world!";
     let json = json!({
-        "message": (hello.into_string())
+        "message": (hello.to_string())
     });
     assert_eq!(json.find("message").and_then(|j| j.as_string()),
                Some(hello));
