@@ -28,7 +28,7 @@ JSON types live.
 
 ```rust
 #![feature(plugin)]
-#[plugin] extern crate json_macros;
+#[plugin] #[no_link] extern crate json_macros;
 
 extern crate "rustc-serialize" as rustc_serialize;
 
@@ -48,6 +48,9 @@ pub fn main() {
 ```
 
 ## Caveats
+
+* If you do not add `#[no_link]` to `extern crate json_macros`, bad things will happen!
+  (You will probably get bad linker errors.)
 
 * Suffixed and negative numeric literals are currently broken, but can
   be worked around by wrapping them in `()`, as in `json!({ "a": (-1234i32) })`.
