@@ -18,9 +18,6 @@ name = "json_macros"
 path = "src/macro.rs"
 plugin = true
 
-[[test]]
-name = "tests"
-
 [dependencies]
 rustc-serialize = "*"
 
