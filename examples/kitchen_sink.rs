@@ -1,5 +1,5 @@
 #![feature(plugin)]
-#[plugin] extern crate json_macros;
+#[plugin] #[no_link] extern crate json_macros;
 
 extern crate "rustc-serialize" as rustc_serialize;
 
