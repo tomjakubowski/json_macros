@@ -1,7 +1,7 @@
 #![crate_name="json_macros"]
 #![crate_type="dylib"]
 #![feature(plugin_registrar, quote)]
-#![allow(unstable)]
+#![feature(core, rustc_private)]
 
 extern crate rustc;
 extern crate syntax;

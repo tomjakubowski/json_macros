@@ -1,5 +1,5 @@
 #![feature(plugin)]
-#![allow(unstable)]
+#![feature(collections, core)]
 #![plugin(json_macros)]
 
 extern crate "rustc-serialize" as rustc_serialize;
