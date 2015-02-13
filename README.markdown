@@ -46,11 +46,3 @@ pub fn main() {
     }).pretty().to_string());
 }
 ```
-
-## Caveats
-
-* If you do not add `#[no_link]` to `extern crate json_macros`, bad things will happen!
-  (You will probably get bad linker errors.)
-
-* Suffixed and negative numeric literals are currently broken, but can
-  be worked around by wrapping them in `()`, as in `json!({ "a": (-1234i32) })`.

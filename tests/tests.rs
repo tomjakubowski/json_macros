@@ -15,7 +15,9 @@ fn test_string_lit() {
 #[test]
 fn test_num_lit() {
     assert_eq!(json!(1234).as_i64(), Some(1234));
+    assert_eq!(json!(-1234).as_i64(), Some(-1234));
     assert_eq!(json!(12345.).as_f64(), Some(12345.));
+    assert_eq!(json!(-12345.6).as_f64(), Some(-12345.6));
 }
 
 #[test]
@@ -32,14 +34,18 @@ fn test_bool_lit() {
 #[test]
 fn test_array_lit() {
     assert_eq!(json!([]), Json::Array(vec![]));
+    assert_eq!(json!([null]), Json::Array(vec![().to_json()]));
 
-    let foobar = Json::Array(vec!["foo".to_string().to_json(),
-                                  "bar".to_string().to_json()]);
+    let foobar = Json::Array(vec!["foo".to_json(),
+                                  "bar".to_json()]);
     assert_eq!(json!(["foo", "bar"]), foobar);
 
-    let foobar = Json::Array(vec!["foo".to_string().to_json(),
-                             vec!["bar".to_string().to_json()].to_json()]);
-    assert_eq!(json!(["foo", ["bar"]]), foobar);
+    let foobar = Json::Array(vec![
+        "foo".to_json(),
+        vec!["bar".to_json()].to_json(),
+        "baz".to_json()
+    ]);
+    assert_eq!(json!(["foo", ["bar"], "baz"]), foobar);
 }
 
 #[test]
@@ -66,7 +72,7 @@ fn test_object_lit() {
     nested.insert("quux".to_string(), Json::Null);
     assert_eq!(json!({
         "foo": { "bar": "baz" },
-        "quux": null,
+        "quux": null
     }), Json::Object(nested));
 }
 
