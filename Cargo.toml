@@ -15,7 +15,7 @@ keywords = ["json", "macros", "plugins"]
 [lib]
 
 name = "json_macros"
-path = "src/macro.rs"
+path = "src/lib.rs"
 plugin = true
 
 [[test]]

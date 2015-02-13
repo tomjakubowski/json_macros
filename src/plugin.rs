@@ -1,12 +1,3 @@
-#![crate_name="json_macros"]
-#![crate_type="dylib"]
-#![feature(plugin_registrar, quote)]
-#![feature(core, rustc_private)]
-
-extern crate rustc;
-extern crate syntax;
-extern crate "rustc-serialize" as rustc_serialize;
-
 use syntax::ast::TokenTree;
 use syntax::codemap::Span;
 use syntax::ptr::P;
@@ -15,16 +6,10 @@ use syntax::ast;
 use syntax::ext::base::{ExtCtxt, MacResult, MacExpr, DummyResult};
 use syntax::parse::token;
 use syntax::print::pprust;
-use rustc::plugin::Registry;
 
 type PExpr = P<ast::Expr>;
 
-#[plugin_registrar]
-pub fn plugin_registrar(reg: &mut Registry) {
-    reg.register_macro("json", expand);
-}
-
-fn expand<'cx>(cx: &'cx mut ExtCtxt, sp: Span,
+pub fn expand<'cx>(cx: &'cx mut ExtCtxt, sp: Span,
                tts: &[TokenTree]) -> Box<MacResult + 'cx> {
     let tt = match tts.get(0) {
         Some(tt) => tt,
