@@ -3,7 +3,7 @@ use syntax::codemap::Span;
 use syntax::ptr::P;
 
 use syntax::ast::Expr;
-use syntax::ext::base::{ExtCtxt, MacResult, MacExpr};
+use syntax::ext::base::{ExtCtxt, MacResult, MacEager};
 use syntax::parse::parser::Parser;
 use syntax::parse::token::Token;
 
@@ -14,7 +14,7 @@ pub fn expand<'cx>(cx: &'cx mut ExtCtxt, _: Span,
     if &parser.token != &Token::Eof {
         cx.span_fatal(parser.span, "expected end of `json!` macro invocation");
     }
-    MacExpr::new(expr)
+    MacEager::expr(expr)
 }
 
 fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
