@@ -1,7 +1,6 @@
 # json_macros
 
 [![Crates.io](https://img.shields.io/crates/v/json_macros.svg)]()
-
 [![Build Status](https://travis-ci.org/tomjakubowski/json_macros.svg?branch=master)]
 (https://travis-ci.org/tomjakubowski/json_macros)
 
