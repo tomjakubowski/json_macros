@@ -1,7 +1,7 @@
 #![feature(plugin)]
 #![plugin(json_macros)]
 
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize;
 
 pub fn main() {
     let x = 123i32;

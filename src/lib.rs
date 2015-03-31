@@ -3,7 +3,7 @@
 
 extern crate rustc;
 extern crate syntax;
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize;
 
 use rustc::plugin::Registry;
 
