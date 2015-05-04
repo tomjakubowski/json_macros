@@ -40,11 +40,11 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 Ok(parse_json(cx, p))
             }).ok().unwrap();
             let exprs = cx.expr_vec(orig_span, exprs);
-            quote_expr!(cx, {{
+            quote_expr!(cx, {
                 use ::std::boxed::Box;
                 let xs: Box<[_]> = Box::new($exprs);
                 ::rustc_serialize::json::Json::Array(xs.into_vec())
-            }})
+            })
         },
         &Token::OpenDelim(DelimToken::Brace) => {
             let _ = parser.bump();
@@ -53,22 +53,27 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 let (istr, _) = p.parse_str().ok().unwrap();
                 let s = &*istr;
                 let _ = p.expect(&Token::Colon);
-                let key = quote_expr!(cx, {{
+                let key = quote_expr!(cx, {
                     use ::std::borrow::ToOwned;
                     $s.to_owned()
-                }});
+                });
                 Ok((key, parse_json(cx, p)))
             }).ok().unwrap();
-            let ob = quote_expr!(cx, _ob);
-            let mut stmts = vec![];
+            let mut insertions = vec![];
+            // Can't use `quote_stmt!()` and interpolate a vector of
+            // statements, seemingly.  Should consider filing a bug
+            // upstream.
             for &(ref key, ref value) in kvs.iter() {
-                stmts.push(quote_stmt!(cx, $ob.insert($key, $value)));
+                insertions.push(quote_expr!(cx, {
+                    _ob.insert($key, $value);
+                }));
             }
-            quote_expr!(cx, {{
-                let mut $ob = ::std::collections::BTreeMap::new();
-                $stmts;
-                ::rustc_serialize::json::Json::Object($ob)
-            }})
+            let expr = quote_expr!(cx, {
+                let mut _ob = ::std::collections::BTreeMap::new();
+                $insertions;
+                ::rustc_serialize::json::Json::Object(_ob)
+            });
+            expr
         },
         &Token::OpenDelim(DelimToken::Paren) => {
             let expr = parser.parse_expr();
