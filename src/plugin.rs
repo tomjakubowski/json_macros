@@ -82,7 +82,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 ($expr).to_json()
             }})
         },
-        &Token::Ident(id, IdentStyle::Plain) if id.as_str() == "null" => {
+        &Token::Ident(id, IdentStyle::Plain) if id.name.as_str() == "null" => {
             let _ = parser.bump();
             quote_expr!(cx, { ::rustc_serialize::json::Json::Null })
         },
