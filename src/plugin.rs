@@ -76,7 +76,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             expr
         },
         &Token::OpenDelim(DelimToken::Paren) => {
-            let expr = parser.parse_expr();
+            let expr = parser.parse_expr_panic();
             quote_expr!(cx, {{
                 use ::rustc_serialize::json::ToJson;
                 ($expr).to_json()
