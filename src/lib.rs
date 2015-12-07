@@ -2,10 +2,11 @@
 #![feature(rustc_private)]
 
 extern crate rustc;
+extern crate rustc_plugin;
 extern crate syntax;
 extern crate rustc_serialize;
 
-use rustc::plugin::Registry;
+use rustc_plugin::Registry;
 
 mod plugin;
 
