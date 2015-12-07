@@ -87,7 +87,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             quote_expr!(cx, { ::rustc_serialize::json::Json::Null })
         },
         _ => { // TODO: investigate can_begin_expr (maybe eliminate need for parens)?
-            let expr = parser.parse_literal_maybe_minus().ok().unwrap();
+            let expr = parser.parse_pat_literal_maybe_minus().ok().unwrap();
             quote_expr!(cx, {{
                 use ::rustc_serialize::json::ToJson;
                 ($expr).to_json()
