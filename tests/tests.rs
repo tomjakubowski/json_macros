@@ -1,7 +1,6 @@
 #![feature(plugin)]
 #![plugin(json_macros)]
 
-extern crate serde;
 extern crate serde_json;
 
 use std::collections::BTreeMap;

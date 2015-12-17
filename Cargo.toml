@@ -9,8 +9,7 @@ repository = "https://github.com/tomjakubowski/json_macros"
 version = "0.2.6"
 
 [dependencies]
-rustc-serialize = "0.3.16"
-serde = "0.6.6"
+rustc-serialize = { version = "0.3.16", optional = true }
 serde_json = "0.6.0"
 
 [[example]]
