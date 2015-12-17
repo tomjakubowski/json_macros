@@ -1,10 +1,11 @@
 #![feature(plugin)]
 #![plugin(json_macros)]
 
-extern crate rustc_serialize;
+extern crate serde;
+extern crate serde_json;
 
 use std::collections::BTreeMap;
-use rustc_serialize::json::{Json, ToJson};
+use serde_json::value::{Value, to_value};
 
 #[test]
 fn test_string_lit() {
@@ -32,29 +33,26 @@ fn test_bool_lit() {
 
 #[test]
 fn test_array_lit() {
-    assert_eq!(json!([]), Json::Array(vec![]));
-    assert_eq!(json!([null]), Json::Array(vec![().to_json()]));
+    assert_eq!(json!([]), Value::Array(vec![]));
+    assert_eq!(json!([null]), Value::Array(vec![to_value(&())]));
 
-    let foobar = Json::Array(vec!["foo".to_json(),
-                                  "bar".to_json()]);
+    let foobar = Value::Array(vec![to_value(&"foo"), to_value(&"bar")]);
     assert_eq!(json!(["foo", "bar"]), foobar);
 
-    let foobar = Json::Array(vec![
-        "foo".to_json(),
-        vec!["bar".to_json()].to_json(),
-        "baz".to_json()
-    ]);
+    let foobar = Value::Array(vec![to_value(&"foo"),
+                                   to_value(&vec![to_value(&"bar")]),
+                                   to_value(&"baz")]);
     assert_eq!(json!(["foo", ["bar"], "baz"]), foobar);
 }
 
 #[test]
 fn test_object_lit() {
     let empty = BTreeMap::new();
-    assert_eq!(json!({}), Json::Object(empty));
+    assert_eq!(json!({}), Value::Object(empty));
 
     let mut foo_bar = BTreeMap::new();
     foo_bar.insert("foo".to_string(), json!("bar"));
-    assert_eq!(json!({"foo": "bar"}), Json::Object(foo_bar));
+    assert_eq!(json!({"foo": "bar"}), Value::Object(foo_bar));
 
     let mut foo_bar_baz_123 = BTreeMap::new();
     foo_bar_baz_123.insert("foo".to_string(), json!("bar"));
@@ -62,17 +60,19 @@ fn test_object_lit() {
     assert_eq!(json!({
         "foo": "bar",
         "baz": 123
-    }), Json::Object(foo_bar_baz_123));
+    }),
+               Value::Object(foo_bar_baz_123));
 
     let mut nested = BTreeMap::new();
     let mut bar_baz = BTreeMap::new();
     bar_baz.insert("bar".to_string(), json!("baz"));
-    nested.insert("foo".to_string(), Json::Object(bar_baz));
-    nested.insert("quux".to_string(), Json::Null);
+    nested.insert("foo".to_string(), Value::Object(bar_baz));
+    nested.insert("quux".to_string(), Value::Null);
     assert_eq!(json!({
         "foo": { "bar": "baz" },
         "quux": null
-    }), Json::Object(nested));
+    }),
+               Value::Object(nested));
 }
 
 #[test]

@@ -1,29 +1,26 @@
 [package]
-
-name = "json_macros"
-version = "0.2.6"
 authors = ["Tom Jakubowski <tom@crystae.net>"]
-
-readme = "README.markdown"
-license = "MIT"
-repository = "https://github.com/tomjakubowski/json_macros"
-description = """
-Convenience macros for constructing JSON objects from literals.
-"""
+description = "Convenience macros for constructing JSON objects from literals.\n"
 keywords = ["json", "macros", "plugins"]
+license = "MIT"
+name = "json_macros"
+readme = "README.markdown"
+repository = "https://github.com/tomjakubowski/json_macros"
+version = "0.2.6"
+
+[dependencies]
+rustc-serialize = "0.3.16"
+serde = "0.6.6"
+serde_json = "0.6.0"
+
+[[example]]
+name = "kitchen-sink"
+path = "examples/kitchen_sink.rs"
 
 [lib]
-
 name = "json_macros"
 path = "src/lib.rs"
 plugin = true
 
 [[test]]
 name = "tests"
-
-[dependencies]
-rustc-serialize = "*"
-
-[[example]]
-name = "kitchen-sink"
-path = "examples/kitchen_sink.rs"
