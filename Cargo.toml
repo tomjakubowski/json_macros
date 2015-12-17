@@ -1,15 +1,17 @@
 [package]
-authors = ["Tom Jakubowski <tom@crystae.net>"]
+authors = [
+  "Tom Jakubowski <tom@crystae.net>",
+  "Yohaï Berreby <yohaiberreby@gmail.com>"
+]
 description = "Convenience macros for constructing JSON objects from literals.\n"
-keywords = ["json", "macros", "plugins"]
+keywords = ["json", "macros", "plugins", "serde", "serialization"]
 license = "MIT"
 name = "json_macros"
-readme = "README.markdown"
+readme = "README.md"
 repository = "https://github.com/tomjakubowski/json_macros"
-version = "0.2.6"
+version = "0.3.0"
 
 [dependencies]
-rustc-serialize = { version = "0.3.16", optional = true }
 serde_json = "0.6.0"
 
 [[example]]
