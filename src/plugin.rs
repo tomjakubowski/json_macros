@@ -38,8 +38,8 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             let exprs = parser.parse_seq_to_end(&r_bracket,
                                                 comma_sep!(),
                                                 |p| Ok(parse_json(cx, p)))
-                              .ok()
-                              .unwrap();
+                .ok()
+                .unwrap();
             let exprs = cx.expr_vec(orig_span, exprs);
             quote_expr!(cx, {
                 use ::std::boxed::Box;
@@ -51,17 +51,17 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             let _ = parser.bump();
             let r_brace = Token::CloseDelim(DelimToken::Brace);
             let kvs = parser.parse_seq_to_end(&r_brace, comma_sep!(), |p| {
-                                let (istr, _) = p.parse_str().ok().unwrap();
-                                let s = &*istr;
-                                let _ = p.expect(&Token::Colon);
-                                let key = quote_expr!(cx, {
+                let (istr, _) = p.parse_str().ok().unwrap();
+                let s = &*istr;
+                let _ = p.expect(&Token::Colon);
+                let key = quote_expr!(cx, {
                     use ::std::borrow::ToOwned;
                     $s.to_owned()
                 });
-                                Ok((key, parse_json(cx, p)))
-                            })
-                            .ok()
-                            .unwrap();
+                Ok((key, parse_json(cx, p)))
+            })
+                .ok()
+                .unwrap();
             let mut insertions = vec![];
             // Can't use `quote_stmt!()` and interpolate a vector of
             // statements, seemingly.  Should consider filing a bug
