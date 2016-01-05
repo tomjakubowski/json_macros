@@ -21,7 +21,7 @@ future release, the default may switch to `serde_json`, but
 `json_macros` should be at least optionally compatible with
 `rustc-serialize` for as long as that crate is supported.
 
-To use `json_macros` with `rustc-serialize`, add both crates as
+To use `json_macros` with `rustc-serialize`, add both packages as
 dependencies to your `Cargo.toml`.
 
 ```toml
@@ -69,12 +69,12 @@ pub fn main() {
 
 ## Using json_macros with serde_json
 
-To use `json_macros` with `serde_json`, add both crates as
+To use `json_macros` with `serde_json`, add both packages as
 dependencies to your `Cargo.toml`.  Enable the `with-serde_json`
 feature for `json_macros` and disable the default features so as to
 not depend on `rustc-serialize`.
 
-``` toml
+```toml
 [dependencies]
 rustc-serialize = "^0.3"
 
