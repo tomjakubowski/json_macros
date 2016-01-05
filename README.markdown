@@ -26,7 +26,7 @@ dependencies to your `Cargo.toml`.
 
 ```toml
 [dependencies]
-json_macros = "0.3.0"
+json_macros = "^0.3"
 rustc-serialize = "^0.3"
 ```
 
