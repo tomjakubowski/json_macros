@@ -1,3 +1,8 @@
 language: rust
 rust:
   - nightly
+script:
+  - cargo build --verbose
+  - cargo test  --verbose
+  - cargo build --verbose --no-default-features --features with-serde
+  - cargo test  --verbose --no-default-features --features with-serde
