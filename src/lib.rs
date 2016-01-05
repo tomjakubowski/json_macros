@@ -4,6 +4,9 @@
 extern crate rustc;
 extern crate rustc_plugin;
 extern crate syntax;
+#[cfg(feature="with-rustc_serialize")]
+extern crate rustc_serialize;
+#[cfg(feature="with-serde")]
 extern crate serde_json;
 
 use rustc_plugin::Registry;

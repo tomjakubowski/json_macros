@@ -1,10 +1,45 @@
 #![feature(plugin)]
 #![plugin(json_macros)]
 
-extern crate serde_json;
-
 use std::collections::BTreeMap;
-use serde_json::value::{Value, to_value};
+
+#[cfg(feature="with-serde")]
+extern crate serde_json;
+#[cfg(feature="with-rustc_serialize")]
+extern crate rustc_serialize;
+
+#[cfg(feature="with-serde")]
+mod imports {
+    pub use serde_json::value::Value;
+    use serde_json::value::Serializer;
+    extern crate serde;
+    use self::serde::ser::Serialize;
+
+    // convenience fn to avoid re-writing tests, close to serde_json's
+    // to_value function.
+    // (when https://github.com/serde-rs/json/pull/52 lands this can
+    // just re-export serde_json::value:;to_value)
+    pub fn to_value<T: ?Sized>(value: &T) -> Value where T: Serialize {
+        let mut ser = Serializer::new();
+        value.serialize(&mut ser).ok().unwrap();
+        ser.unwrap()
+    }
+}
+
+#[cfg(feature="with-rustc_serialize")]
+mod imports {
+    pub use rustc_serialize::json::ToJson;
+    // convenience renaming for rough serde compatibility
+    pub use rustc_serialize::json::Json as Value;
+
+    // convenience fn to avoid re-writing tests, close to serde_json's
+    // to_value function.
+    pub fn to_value<T: ?Sized>(value: &T) -> Value where T: ToJson {
+        value.to_json()
+    }
+}
+
+use imports::*;
 
 #[test]
 fn test_string_lit() {
@@ -35,12 +70,12 @@ fn test_array_lit() {
     assert_eq!(json!([]), Value::Array(vec![]));
     assert_eq!(json!([null]), Value::Array(vec![to_value(&())]));
 
-    let foobar = Value::Array(vec![to_value(&"foo"), to_value(&"bar")]);
+    let foobar = Value::Array(vec![to_value("foo"), to_value("bar")]);
     assert_eq!(json!(["foo", "bar"]), foobar);
 
-    let foobar = Value::Array(vec![to_value(&"foo"),
-                                   to_value(&vec![to_value(&"bar")]),
-                                   to_value(&"baz")]);
+    let foobar = Value::Array(vec![to_value("foo"),
+                                   to_value(&vec![to_value("bar")]),
+                                   to_value("baz")]);
     assert_eq!(json!(["foo", ["bar"], "baz"]), foobar);
 }
 
@@ -59,8 +94,7 @@ fn test_object_lit() {
     assert_eq!(json!({
         "foo": "bar",
         "baz": 123
-    }),
-               Value::Object(foo_bar_baz_123));
+    }), Value::Object(foo_bar_baz_123));
 
     let mut nested = BTreeMap::new();
     let mut bar_baz = BTreeMap::new();
@@ -70,8 +104,7 @@ fn test_object_lit() {
     assert_eq!(json!({
         "foo": { "bar": "baz" },
         "quux": null
-    }),
-               Value::Object(nested));
+    }), Value::Object(nested));
 }
 
 #[test]

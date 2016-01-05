@@ -11,8 +11,17 @@ readme = "README.md"
 repository = "https://github.com/tomjakubowski/json_macros"
 version = "0.3.0"
 
+[features]
+default = ["with-rustc_serialize"]
+with-rustc_serialize = ["rustc-serialize"]
+with-serde = ["serde_json"]
+
 [dependencies]
-serde_json = "0.6.0"
+rustc-serialize = { version = "^0.3", optional = true }
+serde_json = { version = "^0.6", optional = true }
+
+[dev-dependencies]
+serde = "^0.6"
 
 [[example]]
 name = "kitchen-sink"
