@@ -7,7 +7,7 @@ description = "Convenience macros for constructing JSON objects from literals.\n
 keywords = ["json", "macros", "plugins", "serde", "serialization"]
 license = "MIT"
 name = "json_macros"
-readme = "README.md"
+readme = "README.markdown"
 repository = "https://github.com/tomjakubowski/json_macros"
 version = "0.3.0"
 
