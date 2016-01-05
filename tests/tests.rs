@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 
 #[cfg(feature="with-serde")]
 extern crate serde_json;
-#[cfg(feature="with-rustc_serialize")]
+#[cfg(feature="with-rustc-serialize")]
 extern crate rustc_serialize;
 
 #[cfg(feature="with-serde")]
@@ -26,7 +26,7 @@ mod imports {
     }
 }
 
-#[cfg(feature="with-rustc_serialize")]
+#[cfg(feature="with-rustc-serialize")]
 mod imports {
     pub use rustc_serialize::json::ToJson;
     // convenience renaming for rough serde compatibility

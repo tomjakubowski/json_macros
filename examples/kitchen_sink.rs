@@ -1,13 +1,13 @@
 #![feature(plugin)]
 #![plugin(json_macros)]
 
-#[cfg(feature="with-rustc_serialize")]
+#[cfg(feature="with-rustc-serialize")]
 extern crate rustc_serialize;
 
 #[cfg(feature="with-serde")]
 extern crate serde_json;
 
-#[cfg(feature="with-rustc_serialize")]
+#[cfg(feature="with-rustc-serialize")]
 fn make_pretty_json(x: i32) -> String {
     json!({ // object literal
         "foo": "foooooo", // string literal keys and values

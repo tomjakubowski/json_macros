@@ -16,7 +16,7 @@ pub fn expand<'cx>(cx: &'cx mut ExtCtxt, _: Span, tts: &[TokenTree]) -> Box<MacR
     MacEager::expr(expr)
 }
 
-#[cfg(feature="with-rustc_serialize")]
+#[cfg(feature="with-rustc-serialize")]
 fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
     use syntax::ext::build::AstBuilder;
     use syntax::parse::token::{DelimToken, IdentStyle};
