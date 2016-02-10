@@ -4,6 +4,27 @@
 [![Build Status](https://travis-ci.org/tomjakubowski/json_macros.svg?branch=master)]
 (https://travis-ci.org/tomjakubowski/json_macros)
 
+``` rust
+let properties = json! {
+    "menu": {
+        "id": "file",
+        "value": "File",
+        "popup": {
+            "menuitem": [
+                {"value": "New", "onclick": "CreateNewDoc()"},
+                {"value": "Open", "onclick": "OpenDoc()"},
+                {"value": "Close", "onclick": "CloseDoc()"}
+            ]
+        }
+    }
+};
+
+let menu_value = properties.find_path(["menu", "value"])
+    .map(|x| x.as_string());
+
+assert_eq!(menu_value, Some("File"));
+```
+
 Use JSON-like literals in Rust to construct [`serde_json`][] `Value`s
 or [`rustc-serialize`][] `Json` values.
 
