@@ -102,7 +102,7 @@ rustc-serialize = "^0.3"
 [dependencies.json_macros]
 version = "^0.3"
 default-features = false
-features = ["with-serde_json"]
+features = ["with-serde"]
 ```
 
 Your crate will also need to link with `serde_json` and `use` it in
