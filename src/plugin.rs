@@ -99,7 +99,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
 #[cfg(feature="with-serde")]
 fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
     use syntax::ext::build::AstBuilder;
-    use syntax::parse::token::{DelimToken, IdentStyle};
+    use syntax::parse::token::DelimToken;
 
     macro_rules! comma_sep {
         () =>  {
@@ -165,7 +165,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 ::serde_json::to_value(&$expr)
             }})
         }
-        &Token::Ident(id, IdentStyle::Plain) if id.name.as_str() == "null" => {
+        &Token::Ident(id) if id.name.as_str() == "null" => {
             let _ = parser.bump();
             quote_expr!(cx, {
                 ::serde_json::Value::Null
