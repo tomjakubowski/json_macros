@@ -1,7 +1,8 @@
 [package]
 authors = [
   "Tom Jakubowski <tom@crystae.net>",
-  "Yohaï Berreby <yohaiberreby@gmail.com>"
+  "Yohaï Berreby <yohaiberreby@gmail.com>",
+  "Zbigniew Siciarz <zbigniew@siciarz.net>"
 ]
 description = "Convenience macros for constructing JSON objects from literals.\n"
 keywords = ["json", "macros", "plugins", "serde", "serialization"]
