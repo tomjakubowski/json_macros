@@ -1,6 +1,6 @@
-use syntax::ast::TokenTree;
 use syntax::codemap::Span;
 use syntax::ptr::P;
+use syntax::tokenstream::TokenTree;
 
 use syntax::ast::Expr;
 use syntax::ext::base::{ExtCtxt, MacResult, MacEager};
