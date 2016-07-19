@@ -10,7 +10,7 @@ license = "MIT"
 name = "json_macros"
 readme = "README.markdown"
 repository = "https://github.com/tomjakubowski/json_macros"
-version = "0.3.1"
+version = "0.3.2"
 
 [features]
 default = ["with-rustc-serialize"]
