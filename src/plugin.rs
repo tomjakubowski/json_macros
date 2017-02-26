@@ -51,7 +51,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             let r_brace = Token::CloseDelim(DelimToken::Brace);
             let kvs = parser.parse_seq_to_end(&r_brace, comma_sep!(), |p| {
                 let (istr, _) = p.parse_str().ok().unwrap();
-                let s = &*istr;
+                let s = &*istr.as_str();
                 let _ = p.expect(&Token::Colon);
                 let key = quote_expr!(cx, {
                     use ::std::borrow::ToOwned;
@@ -82,7 +82,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 ($expr).to_json()
             }})
         },
-        &Token::Ident(id) if id.name.as_str() == "null" => {
+        &Token::Ident(id) if id.name == "null" => {
             let _ = parser.bump();
             quote_expr!(cx, { ::rustc_serialize::json::Json::Null })
         },
@@ -133,7 +133,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
             let r_brace = Token::CloseDelim(DelimToken::Brace);
             let kvs = parser.parse_seq_to_end(&r_brace, comma_sep!(), |p| {
                 let (istr, _) = p.parse_str().ok().unwrap();
-                let s = &*istr;
+                let s = &*istr.as_str();
                 let _ = p.expect(&Token::Colon);
                 let key = quote_expr!(cx, {
                     use ::std::borrow::ToOwned;
@@ -165,7 +165,7 @@ fn parse_json(cx: &ExtCtxt, parser: &mut Parser) -> P<Expr> {
                 ::serde_json::to_value(&$expr)
             }})
         }
-        &Token::Ident(id) if id.name.as_str() == "null" => {
+        &Token::Ident(id) if id.name == "null" => {
             let _ = parser.bump();
             quote_expr!(cx, {
                 ::serde_json::Value::Null
